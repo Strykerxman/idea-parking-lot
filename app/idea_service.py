@@ -5,7 +5,7 @@ def create_idea(title: str, description: str | None = None) -> Idea:
 
     if not clean_title:
         raise ValueError("Idea title cannot be empty.")
-
+    
     return Idea(
         title=clean_title,
         description=(description or "").strip()
