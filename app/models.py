@@ -11,7 +11,7 @@ class IdeaStatus(str, Enum):
     COMPLETED = "completed"
     DROPPED = "dropped"
 
-# todo: migrate to SQLAlchemy ORM
+
 class Idea(Base):
     __tablename__ = "ideas"
 
@@ -21,10 +21,15 @@ class Idea(Base):
     
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default_factory=lambda: datetime.now(timezone.utc), 
+        default=lambda: datetime.now(timezone.utc), 
         nullable=False
     )
-    status: Mapped[IdeaStatus] = mapped_column(default=IdeaStatus.PARKED, nullable=False)
+
+    status: Mapped[IdeaStatus] = mapped_column(
+        SqlEnum(IdeaStatus, name="idea_status"), 
+        default=IdeaStatus.PARKED, 
+        nullable=False
+    )
         
 
 
