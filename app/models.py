@@ -17,7 +17,7 @@ class Idea(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False) # not nullable to be searchable, identifiable and demonstrative (like on the webpage)
-    description: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True) # we allow description to be None
     
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -27,10 +27,6 @@ class Idea(Base):
 
     status: Mapped[IdeaStatus] = mapped_column(
         SqlEnum(IdeaStatus, name="idea_status"), 
-        default=IdeaStatus.PARKED, 
+        default=IdeaStatus.PARKED,
         nullable=False
     )
-        
-
-
-

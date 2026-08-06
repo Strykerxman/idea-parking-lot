@@ -10,6 +10,8 @@ engine = create_engine(DATABASE_URL)
 
 # SessionLocal creates short-lived ORM sessions bound to the engine.
 SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
+# expire_on_commit set to False because we want to still have objects (like Ideas) in memory to display them on frontend
+# keeps ORM attributes accessible after commit, even after session closes
 
 
 class Base(DeclarativeBase):
