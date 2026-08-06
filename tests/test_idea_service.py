@@ -8,6 +8,16 @@ def test_empty_title_raises_value_error():
 
     assert "Idea title cannot be empty." in str(excinfo.value)
 
+    with pytest.raises(ValueError) as excinfo:
+            create_idea("", "some description")
+    
+    assert "Idea title cannot be empty." in str(excinfo.value)
+
+    with pytest.raises(ValueError) as excinfo:
+                create_idea("\n\t", "some description")
+        
+    assert "Idea title cannot be empty." in str(excinfo.value)
+
 def test_new_idea_status_is_parked():
     idea = create_idea("title", "desc")
     assert idea.status == IdeaStatus.PARKED
