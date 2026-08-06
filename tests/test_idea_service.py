@@ -18,4 +18,9 @@ def test_idea_title_description_is_stripped():
 
 def test_allow_empty_description_on_creation():
     idea = create_idea("title", None)
-    assert idea.description == ""
+    assert idea.description is None
+
+def test_allow_only_title_on_creation():
+    idea = create_idea("title")
+    assert idea.description is None
+    assert idea.title == "title"
