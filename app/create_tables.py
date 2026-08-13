@@ -1,6 +1,6 @@
 from app.database import Base, engine
 
-from app import models
+from app import models # populate model data
 
 def create_tables() -> None: 
     Base.metadata.create_all(bind=engine)

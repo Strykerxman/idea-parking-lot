@@ -1,25 +1,16 @@
 from app.models import Idea, IdeaStatus
 import app.crud as crud
+from app.api.schemas import IdeaCreate
 
-def create_idea(title: str, description: str | None = None) -> Idea:
-    clean_title = title.strip()
-
-    if not clean_title:
-        raise ValueError("Idea title cannot be empty.")
-
-    clean_desc = (
-        None
-        if description is None
-        else description.strip()
-    )
-    # description = None: user didnt add optional description to idea
-    # description is not None: user added a description >> can be "" -> todo: 
-
+def create_idea(payload: IdeaCreate) -> Idea:
+    """
+    Returns the created idea database entry.
+    """
+    
     idea = Idea(
-        title=clean_title,
-        description=clean_desc,
+        title=payload.title,
+        description=payload.description,
         status=IdeaStatus.PARKED
     )
 
-    crud.add_idea(idea)
-    return idea
+    return crud.add_idea(idea)
