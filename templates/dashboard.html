@@ -7,5 +7,19 @@
     <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
   </head>
   <body>
+    <h1>My Ideas</h1>
+    <section>
+        <h2>Parked Ideas</h2>
+        {% for idea in user_ideas %}
+        <article>
+            <h3>{{ idea.title }}</h3>
+
+            {% if idea.description is not none %}
+                <p>{{ idea.description }}</p>
+            {% endif %}
+            
+        </article>
+        {% endfor %}
+    </section>
   </body>
 </html>

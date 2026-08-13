@@ -11,9 +11,7 @@ def add_idea(idea: Idea) -> None:
 
 
 def get_all_ideas():
-    all_ideas = None
-    with SessionLocal.begin() as session:
-        statement = select(Idea)
-        all_ideas = session.execute(statement).all()
+    with SessionLocal() as session:
+        all_ideas = session.scalars(select(Idea)).all()
 
     return all_ideas
