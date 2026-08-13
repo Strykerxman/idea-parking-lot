@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
 
 from app.api.schemas import IdeaCreate, IdeaResponse
 from app.models import Idea
@@ -13,9 +14,12 @@ templates = Jinja2Templates(directory="templates")
 def park_idea(payload: schemas.IdeaCreate):
     try:
         user_idea = IdeaCreate(title=payload.title, description=payload.description)
-        db_idea: Idea = svc.create_idea(user_idea)
+        svc.create_idea(user_idea)
         
-        return db_idea # IdeaResponse reads the database ORM attributes and transforms them into schemas.IdeaResponse JSON payload
+        return RedirectResponse(
+            url="/",
+            status_code=status.HTTP_303_SEE_OTHER
+        )
 
     except ValueError as e:
         raise HTTPException(

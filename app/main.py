@@ -1,10 +1,11 @@
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.routes import router
+import app.crud as crud
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -15,7 +16,13 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="stat
 app.include_router(router)
 
 @app.get("/")
-def root():
-    return {"message": "Welcome to your idea parking lot, anything came up to mind?"}
+def home(request: Request):
+    user_ideas = crud.get_all_ideas()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="dashboard.html",
+        context={"user_ideas": user_ideas}
+    )
 
 
