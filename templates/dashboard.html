@@ -6,49 +6,81 @@
     <title>Idea Parking Lot</title>
     <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
     <script src="{{ url_for('static', path='dashboard.js') }}" defer></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='images/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='images/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', path='site.webmanifest') }}">
   </head>
   <body>
-    <h1>My Ideas</h1>
-    <section>
-        <h2>Active Idea</h2>
-        {% if active_idea %}
-        <article>
+    <div class="app-shell">
+      <header class="page-header">
+        <h1>My Ideas</h1>
+      </header>
+
+      <main class="dashboard">
+        <section class="panel active-panel" aria-labelledby="active-idea-heading">
+          <div class="section-heading active-heading">
+            <h2 id="active-idea-heading">Active Idea</h2>
+          </div>
+
+          {% if active_idea %}
+          <article class="active-idea">
             <h3>{{ active_idea.title }}</h3>
 
             {% if active_idea.description is not none %}
                 <p>{{ active_idea.description }}</p>
             {% endif %}
-        </article>
-        {% else %}
-        <p>No active idea.</p>
-        {% endif %}
-    </section>
-    <section>
-        <h2>Parked Ideas</h2>
-        {% for idea in parked_ideas %}
-        <article>
-            <h3>{{ idea.title }}</h3>
+          </article>
+          {% else %}
+          <p class="empty-state">No active idea.</p>
+          {% endif %}
+        </section>
 
-            {% if idea.description is not none %}
-                <p>{{ idea.description }}</p>
-            {% endif %}
+        <section class="panel capture-panel" aria-labelledby="new-idea-heading">
+          <div class="section-heading">
+            <h2 id="new-idea-heading">Park a New Idea</h2>
+          </div>
 
-        </article>
-        <form method="POST" action="/activate/{{ idea.id }}">
-            <button type="submit">Make Active</button>
-        </form>
-        {% endfor %}
-    </section>
-    <section>
-        <form id="new-idea-form" method="POST" action="/new">
+          <form id="new-idea-form" class="idea-form" method="POST" action="/new">
+            <label for="title">Title</label>
             <input type="text" id="title" name="title" placeholder="Title" required>
-            <button type="button" id="add-desc" class="submit-button">+ Add Description</button>
-            <textarea name="description" id="description" placeholder="Description" hidden disabled></textarea>
-            <button type="submit" id="submit-idea" class="submit-button">Park Idea</button>
-        </form>
-    </section>
-    {% if error %}
-    <p role="alert">{{ error }}</p>
-    {% endif %}
+            <button type="button" id="add-desc" class="submit-button secondary-button">+ Add Description</button>
+            <textarea name="description" id="description" aria-label="Description" placeholder="Description" hidden disabled></textarea>
+            <button type="submit" id="submit-idea" class="submit-button primary-button">Park Idea</button>
+          </form>
+        </section>
+
+        <section class="panel parked-panel" aria-labelledby="parked-ideas-heading">
+          <div class="section-heading">
+            <h2 id="parked-ideas-heading">Parked Ideas</h2>
+          </div>
+
+          <div class="idea-list">
+            {% for idea in parked_ideas %}
+            <article class="idea-card">
+              <div class="idea-card-content">
+                <h3>{{ idea.title }}</h3>
+
+                {% if idea.description is not none %}
+                    <p>{{ idea.description }}</p>
+                {% endif %}
+              </div>
+
+              <form class="idea-card-action" method="POST" action="/activate/{{ idea.id }}">
+                <button type="submit" class="activate-button">Make Active</button>
+              </form>
+            </article>
+            {% endfor %}
+          </div>
+        </section>
+
+        {% if error %}
+        <div class="alert" role="alert">
+          <span class="alert-icon" aria-hidden="true">!</span>
+          <p>{{ error }}</p>
+        </div>
+        {% endif %}
+      </main>
+    </div>
   </body>
 </html>
