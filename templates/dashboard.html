@@ -47,5 +47,8 @@
             <button type="submit" id="submit-idea" class="submit-button">Park Idea</button>
         </form>
     </section>
+    {% if error %}
+    <p role="alert">{{ error }}</p>
+    {% endif %}
   </body>
 </html>

@@ -6,6 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load local development variables without overriding the real environment.
 load_dotenv(ROOT_DIR / ".env")
