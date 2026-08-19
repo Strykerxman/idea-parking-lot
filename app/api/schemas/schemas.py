@@ -15,7 +15,7 @@ class IdeaCreate(BaseModel):
             raise ValueError("Idea title cannot be empty.")
         return cleaned
 
-    @field_validator("description", mode="before") # happens BEFORE pydantic type``
+    @field_validator("description", mode="before") # happens BEFORE pydantic type
     def validate_and_sanitize_desc(value: str | None) -> str | None:
         if value is None:
             return None
@@ -29,5 +29,3 @@ class IdeaResponse(BaseModel):
     description: str | None
     status: IdeaStatus
     created_at: datetime
-
-    model_config = ConfigDict(from_attributes=True) # read attributes from ORM model

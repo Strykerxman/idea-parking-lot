@@ -3,6 +3,6 @@ from app.api.endpoints.manage_ideas import router as idea_router
 
 router = APIRouter()
 
-router.include_router(idea_router, tags=["Idea Parking Lot"], prefix="/ideas")
+router.include_router(idea_router, tags=["Idea Parking Lot"])
 
 __all__ = ["router"]

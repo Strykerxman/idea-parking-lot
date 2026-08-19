@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Idea Parking Lot</title>
     <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+    <script src="{{ url_for('static', path='dashboard.js') }}" defer></script>
   </head>
   <body>
     <h1>My Ideas</h1>
@@ -17,9 +18,17 @@
             {% if idea.description is not none %}
                 <p>{{ idea.description }}</p>
             {% endif %}
-            
+
         </article>
         {% endfor %}
+    </section>
+    <section>
+        <form id="new-idea-form" method="POST" action="/new">
+            <input type="text" id="title" name="title" placeholder="Title" required>
+            <button type="button" id="add-desc" class="submit-button">+ Add Description</button>
+            <textarea name="description" id="description" placeholder="Description" hidden disabled></textarea>
+            <button type="submit" id="submit-idea" class="submit-button">Park Idea</button>
+        </form>
     </section>
   </body>
 </html>

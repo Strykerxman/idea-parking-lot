@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException, status
+from typing import Annotated
+from fastapi import APIRouter, HTTPException, status, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 
 from app.api.schemas import IdeaCreate, IdeaResponse
-from app.models import Idea
 from app import idea_service as svc
 from app.api import schemas
 
@@ -11,7 +11,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 @router.post("/new", response_model=IdeaResponse, status_code=status.HTTP_201_CREATED)
-def park_idea(payload: schemas.IdeaCreate):
+def park_idea(payload: Annotated[schemas.IdeaCreate, Form()]):
     try:
         user_idea = IdeaCreate(title=payload.title, description=payload.description)
         svc.create_idea(user_idea)
