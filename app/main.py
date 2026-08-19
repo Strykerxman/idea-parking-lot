@@ -17,12 +17,14 @@ app.include_router(router)
 
 @app.get("/")
 def home(request: Request):
-    user_ideas = crud.get_all_ideas()
+    active_idea = crud.get_active_idea()
+    parked_ideas = crud.get_parked_ideas()
 
     return templates.TemplateResponse(
         request=request,
         name="dashboard.html",
-        context={"user_ideas": user_ideas}
+        context={"active_idea": active_idea,
+                 "parked_ideas": parked_ideas}
     )
 
 

@@ -26,3 +26,29 @@ def park_idea(payload: Annotated[schemas.IdeaCreate, Form()]):
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=str(e)
         )
+    
+
+@router.post("/activate/{idea_id}")
+def activate_idea(idea_id: int):
+    try:
+        svc.activate_idea(id=idea_id)
+
+        return RedirectResponse(
+            url="/",
+            status_code=status.HTTP_303_SEE_OTHER
+        )
+
+    except ValueError as e:
+        if "not found" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=str(e)
+            )
+
+        if "already active" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=str(e)
+            )
+
+        raise

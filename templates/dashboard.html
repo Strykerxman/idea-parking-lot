@@ -10,8 +10,22 @@
   <body>
     <h1>My Ideas</h1>
     <section>
+        <h2>Active Idea</h2>
+        {% if active_idea %}
+        <article>
+            <h3>{{ active_idea.title }}</h3>
+
+            {% if active_idea.description is not none %}
+                <p>{{ active_idea.description }}</p>
+            {% endif %}
+        </article>
+        {% else %}
+        <p>No active idea.</p>
+        {% endif %}
+    </section>
+    <section>
         <h2>Parked Ideas</h2>
-        {% for idea in user_ideas %}
+        {% for idea in parked_ideas %}
         <article>
             <h3>{{ idea.title }}</h3>
 
@@ -20,6 +34,9 @@
             {% endif %}
 
         </article>
+        <form method="POST" action="/activate/{{ idea.id }}">
+            <button type="submit">Make Active</button>
+        </form>
         {% endfor %}
     </section>
     <section>
