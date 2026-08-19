@@ -1,14 +1,12 @@
 import pytest
 from unittest.mock import patch
-from app.idea_service import create_idea
+from app.idea_service import create_idea, activate_idea
 from app.models import IdeaStatus
 from app.api.schemas import IdeaCreate
 from app import crud
 
 
-# mocked 'crud.add_idea' so it never tries to touch a real database connection
-@patch("app.crud.add_idea")
-def test_empty_title_raises_value_error(mock_add_idea):
+def test_empty_title_raises_value_error():
     # If using mode="after" validator, Pydantic raises ValidationError instead of ValueError
     from pydantic import ValidationError
     
@@ -53,3 +51,33 @@ def test_allow_only_title_on_creation():
     idea = create_idea(IdeaCreate(title="title"))
     assert idea.description is None
     assert idea.title == "title"
+
+
+def test_idea_can_be_activated():
+    idea = create_idea(IdeaCreate(title="title"))
+    assert idea.id is not None
+    assert idea.status == IdeaStatus.PARKED
+
+    activate_idea(idea.id)
+    # assert idea.status == IdeaStatus.ACTIVE # status not updated because idea object is stale, yet updated in db
+
+    updated_idea = crud.get_idea_by_id(idea.id)
+
+    assert updated_idea.status == IdeaStatus.ACTIVE
+
+
+def test_activating_an_idea_when_another_is_active_raises_value_error():
+    idea1 = create_idea(IdeaCreate(title="title1"))
+    idea2 = create_idea(IdeaCreate(title="title2"))
+
+    activate_idea(idea1.id)
+
+    with pytest.raises(ValueError) as excinfo:
+        activate_idea(idea2.id)
+    assert "Another idea is already active." in str(excinfo.value)
+
+
+def test_nonexistent_idea_activation_raises_value_error():
+    with pytest.raises(ValueError) as excinfo:
+        activate_idea(9999)
+    assert "Idea with id 9999 not found." in str(excinfo.value)
