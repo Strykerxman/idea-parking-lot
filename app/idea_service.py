@@ -41,6 +41,7 @@ def switch_active_idea(
     reason: str,
     difficulty: IdeaDifficulty
 ) -> None:
+    """Atomic idea switching, happens in a single database transaction."""
     with SessionLocal.begin() as session:
         new_idea = crud.get_idea_by_id(new_idea_id, session=session)
         active_idea = crud.get_active_idea(session=session)

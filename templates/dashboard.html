@@ -66,9 +66,20 @@
                 {% endif %}
               </div>
 
+              {% if active_idea is none %}
               <form class="idea-card-action" method="POST" action="/activate/{{ idea.id }}">
                 <button type="submit" class="activate-button">Make Active</button>
               </form>
+              {% else %}
+              <button
+                type="button"
+                class="activate-button switch-trigger"
+                data-idea-id="{{ idea.id }}"
+                data-idea-title="{{ idea.title }}"
+                aria-haspopup="dialog"
+                aria-controls="switch-dialog"
+              >Switch to this idea</button>
+              {% endif %}
             </article>
             {% endfor %}
           </div>
@@ -81,6 +92,77 @@
         </div>
         {% endif %}
       </main>
+
+      {% if active_idea is not none %}
+      <dialog id="switch-dialog" class="switch-dialog" aria-labelledby="switch-dialog-heading">
+        <div class="switch-dialog-shell">
+          <header class="switch-dialog-header">
+            <h2 id="switch-dialog-heading">Switch Active Idea</h2>
+            <button type="button" class="dialog-close" id="switch-dialog-close" aria-label="Close switch form">×</button>
+          </header>
+
+          <form id="switch-idea-form" class="switch-form" method="POST" action="/switch">
+            <div class="switch-context" aria-label="Ideas being switched">
+              <div class="switch-context-item">
+                <span>Current active idea</span>
+                <strong>{{ active_idea.title }}</strong>
+              </div>
+              <span class="switch-direction" aria-hidden="true">→</span>
+              <div class="switch-context-item">
+                <span>Switching to</span>
+                <strong id="switch-target-title"></strong>
+              </div>
+            </div>
+
+            <fieldset class="switch-fieldset">
+              <legend>What should happen to the current active idea?</legend>
+              <div class="choice-grid">
+                <label class="choice-option">
+                  <input type="radio" name="old_idea_new_status" value="{{ IdeaStatus.PARKED.value }}" required>
+                  <span>Park it</span>
+                </label>
+                <label class="choice-option">
+                  <input type="radio" name="old_idea_new_status" value="{{ IdeaStatus.COMPLETED.value }}" required>
+                  <span>Mark it completed</span>
+                </label>
+                <label class="choice-option">
+                  <input type="radio" name="old_idea_new_status" value="{{ IdeaStatus.DROPPED.value }}" required>
+                  <span>Drop it</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="switch-field">
+              <label for="switch-reason">Why are you switching?</label>
+              <textarea id="switch-reason" name="reason" rows="4" required></textarea>
+            </div>
+
+            <fieldset class="switch-fieldset">
+              <legend>How difficult was the current project?</legend>
+              <div class="choice-grid difficulty-grid">
+                <label class="choice-option">
+                  <input type="radio" name="difficulty" value="{{ IdeaDifficulty.TOO_EASY.value }}" required>
+                  <span>Too easy</span>
+                </label>
+                <label class="choice-option">
+                  <input type="radio" name="difficulty" value="{{ IdeaDifficulty.JUST_RIGHT.value }}" required>
+                  <span>Just right</span>
+                </label>
+                <label class="choice-option">
+                  <input type="radio" name="difficulty" value="{{ IdeaDifficulty.TOO_HARD.value }}" required>
+                  <span>Too hard</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="switch-form-actions">
+              <button type="button" class="dialog-cancel" id="switch-dialog-cancel">Cancel</button>
+              <button type="submit" class="dialog-submit">Switch Idea</button>
+            </div>
+          </form>
+        </div>
+      </dialog>
+      {% endif %}
     </div>
   </body>
 </html>
