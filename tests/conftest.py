@@ -1,9 +1,8 @@
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 from app.database import Base, SessionLocal
-from app.models import Idea
+from app.models import Idea, IdeaHistory
 
 @pytest.fixture(autouse=True, scope="session")
 def setup_test_db():
@@ -25,12 +24,15 @@ def setup_test_db():
 
 @pytest.fixture(autouse=True)
 def clean_db_each_test():
-    """
-    Ensures each individual test starts with a completely empty database
-    """
+    """Each test starts and ends with an empty database."""
+
+    def clear_database():
+        with SessionLocal.begin() as session:
+            session.query(IdeaHistory).delete()
+            session.query(Idea).delete()
+
+    clear_database()
 
     yield
-    # open a new db session each time a test is ran to delete all test db entries, commit once complete
-    with SessionLocal() as session:
-        session.query(Idea).delete()
-        session.commit()
+
+    clear_database()
