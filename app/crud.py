@@ -1,7 +1,9 @@
 from sqlalchemy import Sequence, select
+from sqlalchemy.orm import Session
 
-from app.models import Idea, IdeaStatus
+from app.models import Idea, IdeaStatus, IdeaHistory
 from app.database import SessionLocal
+
 
 def add_idea(idea: Idea) -> Idea:
     # Automatically Opens -> Begins -> Commits -> Closes
@@ -11,9 +13,12 @@ def add_idea(idea: Idea) -> Idea:
     return idea
 
 
-def get_idea_by_id(idea_id: int) -> Idea | None:
-    with SessionLocal() as session:
-        idea = session.get(Idea, idea_id)
+def get_idea_by_id(idea_id: int, session: Session | None = None) -> Idea | None:
+    if session is not None:
+        return session.get(Idea, idea_id)
+
+    with SessionLocal() as owned_session:
+        idea = owned_session.get(Idea, idea_id)
 
     return idea
 
@@ -26,11 +31,14 @@ def get_all_ideas() -> Sequence[Idea]:
     return all_ideas
 
 
-def get_active_idea() -> Idea | None:
-    with SessionLocal() as session:
-        idea = session.scalar(
-            select(Idea).where(Idea.status == IdeaStatus.ACTIVE)
-        )
+def get_active_idea(session: Session | None = None) -> Idea | None:
+    statement = select(Idea).where(Idea.status == IdeaStatus.ACTIVE)
+
+    if session is not None:
+        return session.scalar(statement)
+
+    with SessionLocal() as owned_session:
+        idea = owned_session.scalar(statement)
 
     return idea
 
@@ -51,4 +59,21 @@ def set_idea_active(idea_id: int) -> None:
             raise ValueError(f"Idea with id {idea_id} not found.")
 
         idea.status = IdeaStatus.ACTIVE
-        
+
+
+def set_idea_status(idea_id: int, new_status: IdeaStatus):
+    with SessionLocal.begin() as session:
+        idea = session.get(Idea, idea_id)
+        if idea is None:
+            raise ValueError(f"Idea with id {idea_id} not found.")
+
+        idea.status == new_status
+
+
+def get_idea_history(idea_id: int) -> IdeaHistory:
+    with SessionLocal() as session:
+        return session.scalars(
+                select(IdeaHistory)
+                .where(IdeaHistory.idea_id == idea_id)
+                .order_by(IdeaHistory.created_at)
+            ).all()
